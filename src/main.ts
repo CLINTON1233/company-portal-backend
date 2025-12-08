@@ -1,18 +1,28 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Aktifkan CORS jika Next.js atau frontend lain ingin akses API
   app.enableCors({
-    origin: '*',
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
+      'http://localhost:3003',
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
   });
 
-  // Set default port ke 6000 jika tidak ada PORT di .env
-  const port = process.env.PORT || 6000;
-  await app.listen(port);
+  // 🔥 expose folder uploads
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
 
-  console.log(` Server berjalan di http://localhost:${port}`);
+  await app.listen(4000);
+  console.log(`Server running on http://localhost:6000`);
 }
 bootstrap();
