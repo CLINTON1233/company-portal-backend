@@ -48,15 +48,36 @@ export class UsersService {
   // }
 
   // Update user
-  async update(id: number, updateData: Partial<user>): Promise<user> {
-    // Jika ada password baru, hash password
-    if (updateData.password) {
-      updateData.password = await bcrypt.hash(updateData.password, 10);
-    }
+  // async update(id: number, updateData: Partial<user>): Promise<user> {
+  //   // Jika ada password baru, hash password
+  //   if (updateData.password) {
+  //     updateData.password = await bcrypt.hash(updateData.password, 10);
+  //   }
 
-    await this.usersRepository.update(id, updateData);
-    return (await this.usersRepository.findOne({ where: { id } }))!;
+  //   await this.usersRepository.update(id, updateData);
+  //   return (await this.usersRepository.findOne({ where: { id } }))!;
+  // }
+
+  // users.service.ts - update method
+async update(id: number, updateData: Partial<user>): Promise<user> {
+  // Filter hanya field yang valid di entity user
+  const validFields = ['nama', 'email', 'password', 'badge', 'telp', 'departemen', 'role'];
+  const filteredData: Partial<user> = {};
+  
+  for (const key of validFields) {
+    if (updateData[key] !== undefined) {
+      filteredData[key] = updateData[key];
+    }
   }
+  
+  // Jika ada password baru, hash password
+  if (filteredData.password) {
+    filteredData.password = await bcrypt.hash(filteredData.password, 10);
+  }
+  
+  await this.usersRepository.update(id, filteredData);
+  return (await this.usersRepository.findOne({ where: { id } }))!;
+}
 
   // Delete user
   async delete(id: number): Promise<void> {
