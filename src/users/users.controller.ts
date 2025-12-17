@@ -55,46 +55,70 @@ export class UsersController {
   }
 
   @Post('login')
-  async login(@Body() body) {
-    const { email, password } = body;
-    const user = await this.usersService.findByEmail(email);
-    if (!user) return { status: 'error', message: 'Email tidak ditemukan' };
+async login(@Body() body) {
+  const { email, password } = body;
+  const user = await this.usersService.findByEmail(email);
+  if (!user) return { status: 'error', message: 'Email tidak ditemukan' };
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return { status: 'error', message: 'Password salah' };
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return { status: 'error', message: 'Password salah' };
 
-    const payload = {
+  return {
+    status: 'success',
+    message: 'Login berhasil',
+    user: {
       id: user.id,
-      role: user.role,
+      nama: user.nama,
       email: user.email,
-    };
+      badge: user.badge,
+      telp: user.telp,
+      departemen: user.departemen,
+      role: user.role,
+    },
+  };
+}
 
-    const token = await this.jwtService.signAsync(payload);
+  // @Post('login')
+  // async login(@Body() body) {
+  //   const { email, password } = body;
+  //   const user = await this.usersService.findByEmail(email);
+  //   if (!user) return { status: 'error', message: 'Email tidak ditemukan' };
 
-    return {
-      status: 'success',
-      message: 'Login berhasil',
-      token,
-      user: {
-        id: user.id,
-        nama: user.nama,
-        email: user.email,
-        badge: user.badge,
-        telp: user.telp,
-        departemen: user.departemen,
-        role: user.role,
-      },
-    };
-  }
+  //   const match = await bcrypt.compare(password, user.password);
+  //   if (!match) return { status: 'error', message: 'Password salah' };
 
-  @Post('verify-token')
-  verifyToken(@Body() body) {
-    try {
-      const decoded = this.jwtService.verify(body.token);
-      return { status: 'valid', decoded };
-    } catch (e) {
-      throw new UnauthorizedException('Invalid token');
-    }
-  }
+  //   const payload = {
+  //     id: user.id,
+  //     role: user.role,
+  //     email: user.email,
+  //   };
+
+  //   const token = await this.jwtService.signAsync(payload);
+
+  //   return {
+  //     status: 'success',
+  //     message: 'Login berhasil',
+  //     token,
+  //     user: {
+  //       id: user.id,
+  //       nama: user.nama,
+  //       email: user.email,
+  //       badge: user.badge,
+  //       telp: user.telp,
+  //       departemen: user.departemen,
+  //       role: user.role,
+  //     },
+  //   };
+  // }
+
+  // @Post('verify-token')
+  // verifyToken(@Body() body) {
+  //   try {
+  //     const decoded = this.jwtService.verify(body.token);
+  //     return { status: 'valid', decoded };
+  //   } catch (e) {
+  //     throw new UnauthorizedException('Invalid token');
+  //   }
+  // }
   
 }
