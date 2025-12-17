@@ -9,6 +9,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       //Localhost
+      'http://172.60.20.28:3000',
       'http://localhost:3000',
       'http://localhost:3001',
       'http://localhost:3002',
@@ -23,7 +24,7 @@ async function bootstrap() {
     prefix: '/uploads/',
   });
 
-  await app.listen(4000);
+await app.listen(4000, '0.0.0.0');
   console.log(`Server running on http://localhost:4000`);
 }
 bootstrap();
